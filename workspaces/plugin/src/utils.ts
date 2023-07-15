@@ -6,12 +6,7 @@ import fs from 'fs';
  * Replace slash and backslash with single slash.
  * This uses for cross-platform path parsing.
  */
-export function replaceSlash<T extends string | undefined | null>(str: T):
-T extends string
-  ? string
-  : T extends undefined | null
-    ? T
-    : never;
+export function replaceSlash<T extends string | undefined | null>(str: T): T extends string ? string : T extends undefined | null ? T : never;
 export function replaceSlash(str: any) { return str?.replaceAll(/[\\/]+/g, '/'); }
 
 /**
@@ -21,8 +16,7 @@ export function replaceSlash(str: any) { return str?.replaceAll(/[\\/]+/g, '/');
 export function createPages<
   Name extends string,
   Filename extends string,
-  Tpl extends string,
->(pages: Page<Name, Filename, Tpl> | Page<Name, Filename, Tpl>[]) {
+>(pages: Page<Name, Filename> | Page<Name, Filename>[]) {
   return Array.isArray(pages) ? pages : [pages];
 }
 

@@ -13,7 +13,7 @@ English | [中文](./README.zh_CN.md)
 
 ## Features
 
-- 💡 EJS Template Capability
+- 💡 EJS/Pug Template Capability
 - 💡 Fully Typed APIs and Prompts, Tiny and Pretty.
 - 🛠️ Customize the path of generated files, generate multiple files using only one template.
 - 🛠️ MPA support and History Fallback API for both dev and preview server.
@@ -26,21 +26,21 @@ pnpm add -D vite-plugin-virtual-mpa # or npm/yarn
 
 ```ts
 // vite.config.ts
-import { createMpaPlugin, createPages } from 'vite-plugin-virtual-mpa'
+import { createMpaPlugin, createPages } from "vite-plugin-virtual-mpa";
 
 // @see https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     createMpaPlugin({
       pages: [
-        /** 
-         * You can write pages configuration here directly. 
+        /**
+         * You can write pages configuration here directly.
          * Or use `createPages` function independently outside and then pass result to this field.
          */
-      ]
+      ],
     }),
   ],
-})
+});
 
 /**
  * This function simply converts the arguments to an array and returns them.
@@ -49,7 +49,7 @@ export default defineConfig({
  */
 const pages = createPages([
   // You can pass a single page object or a pages array.
-])
+]);
 
 // @see https://vitejs.dev/config/
 export default defineConfig({
@@ -58,7 +58,7 @@ export default defineConfig({
       pages,
     }),
   ],
-})
+});
 ```
 
 ## Motivation
@@ -69,7 +69,7 @@ When building **MPA(multi-page-applications)** with Vite, we usually need a plug
 
 2. Auto configurations for `rollupOptions.input` and provide the ability to configure the development server's proxy (primarily the History Fallback API).
 
-There are so many MPA plugins for vite on the market, but it seems no one can do both of above at the same time. I filtered the following plugins based on name matching and downloads: 
+There are so many MPA plugins for vite on the market, but it seems no one can do both of above at the same time. I filtered the following plugins based on name matching and downloads:
 
 1. [vite-plugin-mpa](https://github.com/IndexXuan/vite-plugin-mpa): It can automatically configure the entry and provide the DevServer proxy configuration (history fallback), but we must adjust the directory structure according to the convention, and does not support template engines and virtual entry, and cannot define the path to generate files.
 
@@ -90,19 +90,19 @@ If your project is using Vite workflow and is an MPA application, you may want t
 ## Options
 
 ```ts
-type FilterPattern = string | RegExp | (string | RegExp)[]
-type RewriteRule = false | Rewrite[]
+type FilterPattern = string | RegExp | (string | RegExp)[];
+type RewriteRule = false | Rewrite[];
 interface WatchHandler {
   (ctx: {
-    server: ViteDevServer,
-    file: string,
-    type: Event
+    server: ViteDevServer;
+    file: string;
+    type: Event;
     /**
      * You can update the pages configuration by calling this function.
      * @params pages Your MPA core configurations, which will replace default `pages` config
      */
-    reloadPages: (pages: Page[]) => void
-  }): void
+    reloadPages: (pages: Page[]) => void;
+  }): void;
 }
 
 interface MpaOptions {
@@ -110,22 +110,22 @@ interface MpaOptions {
    * whether to print log
    * @default true
    */
-  verbose?: boolean,
+  verbose?: boolean;
   /**
    * default template file
    * @default index.html
    */
-  template?: `${string}.html`,
+  template?: `${string}.html`;
   /**
    * Configure your rewrite rules, only proceed html requests.
    * @see https://github.com/bripkens/connect-history-api-fallback
    */
-  rewrites?: RewriteRule,
+  rewrites?: RewriteRule;
   /**
    * Configure your preview server's rewrite rules.
    * @see https://github.com/bripkens/connect-history-api-fallback
    */
-  previewRewrites?: RewriteRule,
+  previewRewrites?: RewriteRule;
   /**
    * Use to scan directories that have similar structure to generate pages.
    * Detected pages will be appended to `pages` option, page with name existed will be ignored.
@@ -150,27 +150,29 @@ interface MpaOptions {
    * there are some files added, removed, changed and so on. You can set `watchOptions` to
    * customize your own logic.
    */
-  watchOptions?: WatchHandler | {
-    /**
-     * Specifies the files to **include**, based on `Rollup.createFilter`
-     * @see https://vitejs.dev/guide/api-plugin.html#filtering-include-exclude-pattern
-     */
-    include?: Exclude<FilterPattern, null>,
-    /**
-     * Specifies the files to **exclude**, based on `Rollup.createFilter`
-     * @see https://vitejs.dev/guide/api-plugin.html#filtering-include-exclude-pattern
-     */
-    excluded?: Exclude<FilterPattern, null>,
-    /**
-     * File events you wanna deal with.
-     * @default ['add', 'unlink', 'change', 'unlinkDir', 'addDir']
-     */
-    events?: Event[],
-    /**
-     * Execute your own logic when file events fired.
-     */
-    handler: WatchHandler
-  },
+  watchOptions?:
+    | WatchHandler
+    | {
+        /**
+         * Specifies the files to **include**, based on `Rollup.createFilter`
+         * @see https://vitejs.dev/guide/api-plugin.html#filtering-include-exclude-pattern
+         */
+        include?: Exclude<FilterPattern, null>;
+        /**
+         * Specifies the files to **exclude**, based on `Rollup.createFilter`
+         * @see https://vitejs.dev/guide/api-plugin.html#filtering-include-exclude-pattern
+         */
+        excluded?: Exclude<FilterPattern, null>;
+        /**
+         * File events you wanna deal with.
+         * @default ['add', 'unlink', 'change', 'unlinkDir', 'addDir']
+         */
+        events?: Event[];
+        /**
+         * Execute your own logic when file events fired.
+         */
+        handler: WatchHandler;
+      };
   /**
    * your MPA core configurations
    */
@@ -196,16 +198,17 @@ interface MpaOptions {
     /**
      * Data to inject with ejs.
      */
-    data?: Record<string, any>,
-  }>,
+    data?: Record<string, any>;
+  }>;
   /**
    * Whether to minify html file. Powered by html-minify-terser.
    * @default false
    * @see https://github.com/terser/html-minifier-terser
    */
-  htmlMinify?: Options | boolean,
+  htmlMinify?: Options | boolean;
 }
 ```
+
 ## Examples
 
 Click here [codesandbox](https://codesandbox.io/p/sandbox/vite-plugin-virtual-mpa-0djylc) for a quick preview!
@@ -308,12 +311,12 @@ Here, **inputMap** is a dictionary that map the name matched into the correspond
 
 Request url `/sites/apple/xxx` will be processed by **Default Rewrite Rule**, and will be redirected to the corresponding fallback url `/fruits/apple.html`(name `'apple'` correspond to `'fruits/apple.html'`, the same goes for the rest ones), which is based on `viteConfig.base(here is '/sites/')`. So the final url will be `/sites/fruits/apple.html`.
 
-##  About virtual entry files
+## About virtual entry files
 
 Usually during development, our files are written locally, and we can access the local corresponding files through the URL through the DevServer proxy. The same is true for virtual files, except that the corresponding file is not written to the filesystem but is kept in memory.
 
-The plugin generates virtual files using the template system, allowing you to **reach the in-memory virtual files** at development time and generate them in the corresponding directory at build time. 
- 
+The plugin generates virtual files using the template system, allowing you to **reach the in-memory virtual files** at development time and generate them in the corresponding directory at build time.
+
 It's perfectly okay to think that these virtual files are really exist, and it will help you build an intuition about them in your mind to be able to write your proxy configuration correctly.
 
 ## About EJS template engine

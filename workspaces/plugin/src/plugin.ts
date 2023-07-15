@@ -1,4 +1,5 @@
 import ejs from 'ejs';
+import pug from 'pug';
 import color from 'picocolors';
 import fs from 'fs';
 import path from 'path';
@@ -21,14 +22,13 @@ const pluginName = color.cyan(pkgName);
 export function createMpaPlugin<
   PN extends string,
   PFN extends string,
-  PT extends string,
   Event extends AllowedEvent,
-  TPL extends string,
 >(
-  config: MpaOptions<PN, PFN, PT, Event, TPL>,
+  config: MpaOptions<PN, PFN, Event>,
 ): Plugin {
   const {
     template = 'index.html',
+    templateEngine = 'ejs',
     verbose = true,
     pages = [],
     rewrites,
@@ -185,20 +185,36 @@ export function createMpaPlugin<
       const page = virtualPageMap[id];
       if (!page) return null;
       const templateContent = fs.readFileSync(page.template || template, 'utf-8');
-      return ejs.render(
-        !page.entry
-          ? templateContent
-          : templateContent.replace(
-            bodyInject,
-            `<script type="module" src="${normalizePath(
-              `${page.entry}`,
-            )}"></script>\n</body>`,
-          ),
-        // Variables injection
-        { ...resolvedConfig.env, ...page.data },
-        // For error report
-        { filename: id, root: resolvedConfig.root },
-      );
+      let html = '';
+      if (templateEngine === 'pug') {
+        html = pug.render(templateContent, {
+          filename: id,
+          basedir: resolvedConfig.root,
+          pretty: true,
+          ...resolvedConfig.env,
+          ...page.data,
+        });
+        if (page.entry) {
+          html = html.replace(bodyInject, `<script type="module" src="${normalizePath(`${page.entry}`)}"></script>\n</body>`);
+        }
+      } else {
+        html = ejs.render(
+          !page.entry
+            ? templateContent
+            : templateContent.replace(
+              bodyInject,
+              `<script type="module" src="${normalizePath(
+                `${page.entry}`,
+              )}"></script>\n</body>`,
+            ),
+          // Variables injection
+          { ...resolvedConfig.env, ...page.data },
+          // For error report
+          { filename: id, root: resolvedConfig.root },
+        );
+      }
+
+      return html;
     },
     configureServer(server) {
       const {
@@ -217,9 +233,7 @@ export function createMpaPlugin<
           handler,
           include,
           excluded,
-        } = typeof watchOptions === 'function'
-          ? { handler: watchOptions } as WatchOptions<Event>
-          : watchOptions;
+        } = typeof watchOptions === 'function' ? { handler: watchOptions } as WatchOptions<Event> : watchOptions;
 
         const isMatch = createFilter(include || /.*/, excluded);
 

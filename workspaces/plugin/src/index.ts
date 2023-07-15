@@ -9,11 +9,9 @@ export { createPages } from './utils';
 export function createMpaPlugin<
   PN extends string,
   PFN extends string,
-  PT extends string,
   Event extends AllowedEvent,
-  TPL extends string,
 >(
-  config: MpaOptions<PN, PFN, PT, Event, TPL>,
+  config: MpaOptions<PN, PFN, Event>,
 ): Plugin[] {
   const { htmlMinify } = config;
   return !htmlMinify

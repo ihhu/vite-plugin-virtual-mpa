@@ -51,7 +51,8 @@
     "connect-history-api-fallback": "^2.0.0",
     "ejs": "^3.1.9",
     "html-minifier-terser": "^7.2.0",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "pug": "^3.0.2"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.2",

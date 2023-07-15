@@ -5,16 +5,11 @@ import type { Options } from 'html-minifier-terser';
 export type AllowedEvent = 'add' | 'unlink' | 'change' | 'unlinkDir' | 'addDir';
 
 export type TplStr<T extends string> =
-  T extends `/${infer P}`
-    ? TplStr<P>
-    : T extends `${infer Q}.html`
-      ? TplStr<Q>
-      : `${T}.html`;
+  T extends `/${infer P}` ? TplStr<P> : T extends `${infer Q}.html` ? TplStr<Q> : `${T}.html`;
 
 export interface Page<
   Name extends string = string,
   Filename extends string = string,
-  Tpl extends string = string,
 > {
   /**
    * Required. Name is used to generate default rewrite rules, it just a common string and please don't include '/'.
@@ -29,7 +24,7 @@ export interface Page<
   /**
    * **Higher priority template file**, which will overwrite the default template.
    */
-  template?: TplStr<Tpl>
+  template?: string
   /**
    * Entry file that will append to body, which you should remove from the html template file.
    * It must always start with `'/'` which represents your project root directory.
@@ -53,12 +48,11 @@ export type WatchHandler<Event extends AllowedEvent = AllowedEvent> = (
     reloadPages: <
       PN extends string,
       PFN extends string,
-      PT extends string,
-    >(pages: Page<PN, PFN, PT>[]) => void
+    >(pages: Page<PN, PFN>[]) => void
   }
 ) => void;
 
-export interface WatchOptions<Event extends AllowedEvent = AllowedEvent>{
+export interface WatchOptions<Event extends AllowedEvent = AllowedEvent> {
   /**
    * Specifies the files to **include**, based on `Rollup.createFilter`
    * @see https://vitejs.dev/guide/api-plugin.html#filtering-include-exclude-pattern
@@ -106,9 +100,7 @@ export type RewriteRule = false | Rewrite[];
 export interface MpaOptions<
   PageName extends string,
   PageFilename extends string,
-  PageTpl extends string,
   Event extends AllowedEvent,
-  DefTpl extends string,
 > {
   /**
    * Whether to print log.
@@ -119,7 +111,8 @@ export interface MpaOptions<
    * Default template file.
    * @default index.html
    */
-  template?: TplStr<DefTpl>;
+  template?: string;
+  templateEngine?: 'ejs' | 'pug';
   /**
    * Configure your dev server's rewrite rules, only proceed fallback html requests.
    * @see https://github.com/bripkens/connect-history-api-fallback
@@ -139,7 +132,7 @@ export interface MpaOptions<
   /**
    * Your MPA core configurations, you can write directly or use `createPages` function independently outside and then pass it to this field.
    */
-  pages?: Page<PageName, PageFilename, PageTpl>[];
+  pages?: Page<PageName, PageFilename>[];
   /**
    * Use to scan directories that have similar structure to generate pages.
    * Detected pages will be appended to `pages` option, page with name existed will be ignored.
